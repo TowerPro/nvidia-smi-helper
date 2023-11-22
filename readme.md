@@ -20,4 +20,4 @@
 * 运行run.sh开始程序，可以设置为开启自启
 * fuckGPU.sh可以替换为自己的训练脚本
 
-[sample](https://github.com/TowerPro/nvidia-smi-helper/tree/main/sample.png)
+<img src="./sample.png"  />
