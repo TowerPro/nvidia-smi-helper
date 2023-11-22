@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>nVidia-smi Helper</title>
+</head>
+
+<body onload="updateInfo()">
+
+
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+    </style>
+    <div class="container">
+        <h1 id="robGPU">nVidia-smi Helper</h1>
+        <h2>The server will restart every Friday at 11pm</h2>
+        <h3 id="otp">{{otp}}</h3>
+
+        <style>
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            th,
+            td {
+                text-align: center;
+                padding: 10px;
+            }
+
+            th {
+                background-color: #f2f2f2;
+            }
+
+            #device-id-0,
+            #memory-usage-0 {
+                vertical-align: middle;
+            }
+
+            #memory-info-0,
+            #user-pid-0 {
+                vertical-align: middle;
+                white-space: nowrap;
+            }
+        </style>
+
+        <table>
+            <tr>
+                <th>Device ID</th>
+                <th>Used Memory / Total Memory</th>
+                <th>Memory Usage</th>
+                <th>User (PID)</th>
+            </tr>
+            <tr>
+                <td id="device-id-0">{{dev0}}</td>
+                <td id="memory-info-0">{{info0}}</td>
+                <td id="memory-usage-0">{{mem0}}</td>
+                <td id="user-pid-0">{{usr0}}</td>
+            </tr>
+            <tr>
+                <td id="device-id-1">{{dev1}}</td>
+                <td id="memory-info-1">{{info1}}</td>
+                <td id="memory-usage-1">{{mem1}}</td>
+                <td id="user-pid-1">{{usr1}}</td>
+            </tr>
+            <tr>
+                <td id="device-id-2">{{dev2}}</td>
+                <td id="memory-info-2">{{info2}}</td>
+
+                <td id="memory-usage-2">{{mem2}}</td>
+                <td id="user-pid-2">{{usr2}}</td>
+            </tr>
+            <tr>
+                <td id="device-id-3">{{dev3}}</td>
+                <td id="memory-info-3">{{info3}}</td>
+
+                <td id="memory-usage-3">{{mem3}}</td>
+                <td id="user-pid-3">{{usr3}}</td>
+            </tr>
+            <tr>
+                <td id="device-id-4">{{dev4}}</td>
+                <td id="memory-info-4">{{info4}}</td>
+                <td id="memory-usage-4">{{mem4}}</td>
+                <td id="user-pid-4">{{usr4}}</td>
+            </tr>
+            <tr>
+                <td id="device-id-5">{{dev5}}</td>
+                <td id="memory-info-5">{{info5}}</td>
+
+                <td id="memory-usage-5">{{mem5}}</td>
+                <td id="user-pid-5">{{usr5}}</td>
+            </tr>
+            <tr>
+                <td id="device-id-6">{{dev6}}</td>
+                <td id="memory-info-6">{{info6}}</td>
+
+                <td id="memory-usage-6">{{mem6}}</td>
+                <td id="user-pid-6">{{usr6}}</td>
+            </tr>
+
+        </table>
+    </div>
+    <!-- <button onclick="refreshData()" style="margin-left: 200px; margin-top: 20px;">Refresh</button>
+    </div> -->
+
+    <!-- <script>
+        function refreshData() {
+            location.reload();
+        }
+    </script> -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+        function setElementBackgroundColor(index, color, opacity) {
+            var deviceId = 'device-id-' + index;
+            var memoryInfoId = 'memory-info-' + index;
+            var memoryUsageId = 'memory-usage-' + index;
+            var userPidId = 'user-pid-' + index;
+
+            var deviceElement = document.getElementById(deviceId);
+            var memoryInfoElement = document.getElementById(memoryInfoId);
+            var memoryUsageElement = document.getElementById(memoryUsageId);
+            var userPidElement = document.getElementById(userPidId);
+
+            if (deviceElement) {
+                deviceElement.style.backgroundColor = 'rgba(' + color + ', ' + opacity + ')';
+            }
+            if (memoryInfoElement) {
+                memoryInfoElement.style.backgroundColor = 'rgba(' + color + ', ' + opacity + ')';
+            }
+            if (memoryUsageElement) {
+                memoryUsageElement.style.backgroundColor = 'rgba(' + color + ', ' + opacity + ')';
+            }
+            if (userPidElement) {
+                userPidElement.style.backgroundColor = 'rgba(' + color + ', ' + opacity + ')';
+            }
+        }
+
+
+        function setBackgroundColor() {
+            for (var i = 0; i <= 6; i++) {
+                var elementId = 'memory-usage-' + i;
+                var element = document.getElementById(elementId);
+
+                if (element) {
+                    var value = element.textContent.trim();
+
+                    if (value === 'OFFLINE') {
+                        setElementBackgroundColor(i, '255, 0, 0', '0.7');
+                        // element.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+                    } else {
+                        var numericValue = parseFloat(value);
+                        if (!isNaN(numericValue)) {
+                            if (numericValue > 60) {
+                                setElementBackgroundColor(i, '255, 165, 0', '0.3');
+                                // element.style.backgroundColor = 'rgba(255, 165, 0, 0.5)';
+                            } else {
+                                setElementBackgroundColor(i, '0, 255, 0', '0.6');
+                                // element.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        function updateInfo() {
+            $.ajax({
+                url: '/get_latest_info',
+                method: 'GET',
+                success: function (data) {
+                    $('#otp').text(data.otp);
+
+                    $('#device-id-0').text(data.dev0);
+                    $('#memory-info-0').text(data.info0);
+                    $('#memory-usage-0').text(data.mem0);
+                    $('#user-pid-0').text(JSON.stringify(data.usr0));
+
+                    $('#device-id-1').text(data.dev1);
+                    $('#memory-info-1').text(data.info1);
+                    $('#memory-usage-1').text(data.mem1);
+                    $('#user-pid-1').text(JSON.stringify(data.usr1));
+
+                    $('#device-id-2').text(data.dev2);
+                    $('#memory-info-2').text(data.info2);
+                    $('#memory-usage-2').text(data.mem2);
+                    $('#user-pid-2').text(JSON.stringify(data.usr2));
+
+                    $('#device-id-3').text(data.dev3);
+                    $('#memory-info-3').text(data.info3);
+                    $('#memory-usage-3').text(data.mem3);
+                    $('#user-pid-3').text(JSON.stringify(data.usr3));
+
+                    $('#device-id-4').text(data.dev4);
+                    $('#memory-info-4').text(data.info4);
+                    $('#memory-usage-4').text(data.mem4);
+                    $('#user-pid-4').text(JSON.stringify(data.usr4));
+
+                    $('#device-id-5').text(data.dev5);
+                    $('#memory-info-5').text(data.info5);
+                    $('#memory-usage-5').text(data.mem5);
+                    $('#user-pid-5').text(JSON.stringify(data.usr5));
+
+                    $('#device-id-6').text(data.dev6);
+                    $('#memory-info-6').text(data.info6);
+                    $('#memory-usage-6').text(data.mem6);
+                    $('#user-pid-6').text(JSON.stringify(data.usr6));
+                }
+            });
+            setBackgroundColor();
+        }
+        setInterval(updateInfo, 1000);
+        // 10 seconds
+
+        var clickCount = 0;
+        document.getElementById("robGPU").addEventListener('click', function () {
+            clickCount++;
+            if (clickCount === 5) {
+                $.ajax({
+                    url: '/set_rob',
+                    method: 'GET',
+                    success: function (response) {
+                        console.log(response);
+                    }
+                });
+                clickCount = 0;
+            }
+        });
+    </script>
+</body>
+
+</html>
